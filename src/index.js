@@ -1,7 +1,7 @@
-import * as dscc from '@google/dscc';
-import { Chart, registerables } from 'chart.js';
-
-Chart.register(...registerables);
+var dscc = require('@google/dscc');
+var ChartJS = require('chart.js');
+var Chart = ChartJS.Chart;
+Chart.register.apply(Chart, ChartJS.registerables);
 
 const PALETTES = {
   vibrant: ['#4285F4','#EA4335','#FBBC04','#34A853','#FF6D01','#46BDC6','#7BAAF7','#F07B72'],

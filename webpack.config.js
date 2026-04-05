@@ -10,22 +10,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
-        resolve: {
-          fullySpecified: false
-        },
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      },
-      {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
     ],
+  },
+  resolve: {
+    fullySpecified: false
   },
   plugins: [
     new CopyPlugin({
