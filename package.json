@@ -10,8 +10,8 @@
     "start": "webpack --mode development --watch",
     "build:dev": "webpack --mode development",
     "build:prod": "webpack --mode production",
-    "deploy:dev": "npm run build:dev && gsutil cp -a public-read dist/* gs://YOUR_BUCKET/looker-viz-dev/",
-    "deploy:prod": "npm run build:prod && gsutil cp -a public-read dist/* gs://YOUR_BUCKET/looker-viz/"
+    "deploy:dev": "npm run build:dev && gsutil cp -a public-read dist/* gs://sovitnayak-looker-viz/yoy-bar-chart-dev/",
+    "deploy:prod": "npm run build:prod && gsutil cp -a public-read dist/* gs://sovitnayak-looker-viz/yoy-bar-chart/"
   },
   "repository": {
     "type": "git",
