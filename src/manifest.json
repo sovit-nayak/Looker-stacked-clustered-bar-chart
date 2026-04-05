@@ -1,0 +1,25 @@
+{
+  "name": "Y/Y Clustered Stacked Bar",
+  "organization": "Sovit-BI",
+  "description": "Year-over-year clustered stacked bar chart. LY vs TY side-by-side with multiple metrics stacked inside each bar.",
+  "logoUrl": "",
+  "organizationUrl": "",
+  "supportUrl": "",
+  "privacyPolicyUrl": "",
+  "termsOfServiceUrl": "",
+  "packageUrl": "",
+  "devMode": true,
+  "components": [
+    {
+      "id": "yoyClusteredStackedBar",
+      "name": "Y/Y Clustered Stacked Bar",
+      "description": "Weeks on X-axis, LY vs TY clustered, metrics stacked inside.",
+      "iconUrl": "",
+      "resource": {
+        "js": "viz.js",
+        "config": "viz-config.json",
+        "css": "viz.css"
+      }
+    }
+  ]
+}
