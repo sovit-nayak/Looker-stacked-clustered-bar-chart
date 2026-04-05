@@ -16,9 +16,9 @@
       "description": "Weeks on X-axis, LY vs TY clustered, metrics stacked inside.",
       "iconUrl": "",
       "resource": {
-        "js": "viz.js",
-        "config": "viz-config.json",
-        "css": "viz.css"
+        "js": "gs://sovitnayak-looker-viz/yoy-bar-chart-dev/viz.js",
+        "config": "gs://sovitnayak-looker-viz/yoy-bar-chart-dev/viz-config.json",
+        "css": "gs://sovitnayak-looker-viz/yoy-bar-chart-dev/viz.css"
       }
     }
   ]
