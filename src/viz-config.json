@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "id": "concepts",
+      "label": "Data",
+      "elements": [
+        {
+          "id": "timeDimension",
+          "label": "Time Period (X-Axis)",
+          "type": "DIMENSION",
+          "options": { "min": 1, "max": 1 }
+        },
+        {
+          "id": "comparisonDimension",
+          "label": "Comparison Group (e.g. LY vs TY)",
+          "type": "DIMENSION",
+          "options": { "min": 1, "max": 1 }
+        },
+        {
+          "id": "metric",
+          "label": "Stacked Metrics",
+          "type": "METRIC",
+          "options": { "min": 1, "max": 10 }
+        }
+      ]
+    }
+  ],
+  "style": [
+    {
+      "id": "chartStyle",
+      "label": "Chart Style",
+      "elements": [
+        {
+          "id": "barColors",
+          "label": "Color Palette",
+          "type": "SELECT_SINGLE",
+          "defaultValue": "vibrant",
+          "options": [
+            { "label": "Vibrant", "value": "vibrant" },
+            { "label": "Pastel", "value": "pastel" },
+            { "label": "Corporate", "value": "corporate" }
+          ]
+        },
+        {
+          "id": "showLegend",
+          "label": "Show Legend",
+          "type": "CHECKBOX",
+          "defaultValue": true
+        },
+        {
+          "id": "showValues",
+          "label": "Show Data Labels",
+          "type": "CHECKBOX",
+          "defaultValue": false
+        },
+        {
+          "id": "borderRadius",
+          "label": "Bar Corner Radius",
+          "type": "SELECT_SINGLE",
+          "defaultValue": "2",
+          "options": [
+            { "label": "None", "value": "0" },
+            { "label": "Small", "value": "2" },
+            { "label": "Medium", "value": "6" }
+          ]
+        },
+        {
+          "id": "chartTitle",
+          "label": "Chart Title",
+          "type": "TEXTINPUT",
+          "defaultValue": ""
+        }
+      ]
+    }
+  ],
+  "interactions": []
+}
