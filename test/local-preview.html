@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Y/Y Bar Chart — Local Test</title>
+  <style>
+    body { margin: 0; background: #f1f3f4; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+    #frame { width: 800px; height: 500px; background: #fff; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.12); position: relative; }
+    .controls { position: fixed; top: 16px; right: 16px; background: #fff; padding: 12px 16px; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.12); font-size: 13px; }
+    .controls button { padding: 6px 14px; border: 1px solid #dadce0; background: #fff; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .controls button:hover { background: #f1f3f4; }
+  </style>
+</head>
+<body>
+  <div id="frame"></div>
+  <div class="controls">
+    <button onclick="rerender()">New random data</button>
+  </div>
+
+  <script src="../dist/viz.js"></script>
+  <script>
+    function rand(min, max) { return Math.round(Math.random() * (max - min) + min); }
+
+    function buildMockData() {
+      return {
+        tables: {
+          DEFAULT: {
+            headers: [
+              { configId: 'timeDimension', name: 'Week' },
+              { configId: 'comparisonDimension', name: 'Year' },
+              { configId: 'metric', name: 'Revenue' },
+              { configId: 'metric', name: 'Units' },
+              { configId: 'metric', name: 'Returns' }
+            ],
+            rows: [
+              ['Week 1', 'LY', rand(200,400), rand(100,250), rand(20,60)],
+              ['Week 1', 'TY', rand(250,500), rand(150,300), rand(15,50)],
+              ['Week 2', 'LY', rand(200,400), rand(100,250), rand(20,60)],
+              ['Week 2', 'TY', rand(250,500), rand(150,300), rand(15,50)],
+              ['Week 3', 'LY', rand(200,400), rand(100,250), rand(20,60)],
+              ['Week 3', 'TY', rand(250,500), rand(150,300), rand(15,50)],
+              ['Week 4', 'LY', rand(200,400), rand(100,250), rand(20,60)],
+              ['Week 4', 'TY', rand(250,500), rand(150,300), rand(15,50)],
+              ['Week 5', 'LY', rand(200,400), rand(100,250), rand(20,60)],
+              ['Week 5', 'TY', rand(250,500), rand(150,300), rand(15,50)],
+              ['Week 6', 'LY', rand(200,400), rand(100,250), rand(20,60)],
+              ['Week 6', 'TY', rand(250,500), rand(150,300), rand(15,50)]
+            ]
+          }
+        },
+        style: {
+          barColors: { value: 'vibrant' },
+          showLegend: { value: true },
+          showValues: { value: false },
+          borderRadius: { value: '2' },
+          chartTitle: { value: 'Y/Y Revenue' }
+        }
+      };
+    }
+
+    function rerender() {
+      document.getElementById('frame').innerHTML = '';
+      var container = document.createElement('div');
+      container.id = 'viz-container';
+      container.style.width = '100%';
+      container.style.height = '100%';
+      document.getElementById('frame').appendChild(container);
+      drawViz(buildMockData());
+    }
+  </script>
+</body>
+</html>

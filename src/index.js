@@ -236,4 +236,7 @@ function drawViz(data) {
   }
 }
 
+if (typeof window !== 'undefined') {
+  window.drawViz = drawViz;
+}
 dscc.subscribeToData(drawViz, { transform: dscc.tableTransform });
