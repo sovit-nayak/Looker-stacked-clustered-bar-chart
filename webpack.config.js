@@ -10,8 +10,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false
+        },
         use: {
           loader: 'babel-loader',
           options: {
