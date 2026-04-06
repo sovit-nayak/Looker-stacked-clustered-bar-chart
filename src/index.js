@@ -3,7 +3,6 @@ var ChartJS = require('chart.js');
 var Chart = ChartJS.Chart;
 Chart.register.apply(Chart, ChartJS.registerables);
 
-// Default Freeosk brand colors
 var DEFAULT_COLORS = ['#F37021', '#0072BA', '#FFC20E', '#52BFEE', '#76777A',
   '#F37021', '#0072BA', '#FFC20E', '#52BFEE', '#76777A'];
 
@@ -35,10 +34,16 @@ function getFontColor(styleObj, id, fallback) {
 }
 
 function hexToRgba(hex, alpha) {
+  if (hex.indexOf('rgba') === 0) return hex;
   var r = parseInt(hex.slice(1, 3), 16);
   var g = parseInt(hex.slice(3, 5), 16);
   var b = parseInt(hex.slice(5, 7), 16);
   return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+}
+
+function formatCurrency(value, symbol) {
+  if (!symbol) return value.toLocaleString();
+  return symbol + value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
 function renderError(title, detail) {
@@ -52,6 +57,34 @@ function renderError(title, detail) {
     '<div class="error-title">' + title + '</div>' +
     '<div class="error-detail">' + detail + '</div>';
   document.body.appendChild(el);
+}
+
+// ── Create or get the tooltip element ───────────────────────
+function getOrCreateTooltipEl() {
+  var el = document.getElementById('viz-tooltip');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'viz-tooltip';
+    el.style.cssText = [
+      'position:absolute',
+      'pointer-events:none',
+      'background:#fff',
+      'border:1px solid #dadce0',
+      'border-radius:8px',
+      'padding:12px 16px',
+      'font-family:Arial,sans-serif',
+      'font-size:12px',
+      'color:#202124',
+      'box-shadow:0 2px 8px rgba(0,0,0,0.15)',
+      'z-index:9999',
+      'opacity:0',
+      'transition:opacity 0.15s ease, left 0.1s ease, top 0.1s ease',
+      'white-space:nowrap',
+      'min-width:180px'
+    ].join(';');
+    document.body.appendChild(el);
+  }
+  return el;
 }
 
 function drawViz(data) {
@@ -77,7 +110,6 @@ function drawViz(data) {
       return renderError('Missing fields', 'Need 1 Time Period, 1 Comparison Group, and at least 1 Metric.');
     }
 
-    // Collect unique labels preserving order
     var timeLabels = [];
     var timeLabelsSet = {};
     var compLabels = [];
@@ -90,7 +122,6 @@ function drawViz(data) {
     });
     var metricNames = metricIdxs.map(function(i) { return headers[i].name; });
 
-    // Build lookup: time -> comp -> [metric values]
     var lookup = {};
     timeLabels.forEach(function(t) {
       lookup[t] = {};
@@ -106,33 +137,28 @@ function drawViz(data) {
       });
     });
 
-    // ── Read all style options ──────────────────────────────
+    // ── Read style options ──────────────────────────────────
     var style = data.style || {};
 
-    // Title
     var showTitle       = styleVal(style, 'showTitle', true);
     var chartTitle      = styleVal(style, 'chartTitle', 'Y/Y Revenue');
     var titleFontFamily = styleVal(style, 'titleFontFamily', 'Arial');
     var titleFontSize   = parseInt(styleVal(style, 'titleFontSize', '20'), 10);
     var titleFontColor  = getFontColor(style, 'titleFontColor', '#000000');
 
-    // Bars
-    var barPct          = parseFloat(styleVal(style, 'barPercentage', '0.95'));
-    var showDataLabels  = styleVal(style, 'showDataLabels', false);
-    var borderRad       = parseInt(styleVal(style, 'borderRadius', '2'), 10);
+    var barPct         = parseFloat(styleVal(style, 'barPercentage', '0.95'));
+    var showDataLabels = styleVal(style, 'showDataLabels', false);
+    var borderRad      = parseInt(styleVal(style, 'barBorderRadius', '2'), 10);
+    var currencySymbol = styleVal(style, 'currencySymbol', '$');
 
-    // Colors — one per metric from the style panel
     var metricColors = [];
     for (var ci = 0; ci < metricIdxs.length; ci++) {
-      var colorId = 'color' + (ci + 1);
-      metricColors.push(getColor(style, colorId, DEFAULT_COLORS[ci]));
+      metricColors.push(getColor(style, 'color' + (ci + 1), DEFAULT_COLORS[ci]));
     }
 
-    // LY opacity
     var lyOpacity = styleVal(style, 'lyOpacity', 0.5);
     if (typeof lyOpacity === 'object' && lyOpacity !== null) lyOpacity = 0.5;
 
-    // Axes
     var showAxes       = styleVal(style, 'showAxes', true);
     var axisColor      = getFontColor(style, 'axisColor', '#5f6368');
     var showYAxisTitle = styleVal(style, 'showYAxisTitle', false);
@@ -142,12 +168,10 @@ function drawViz(data) {
     var xFontColor     = getFontColor(style, 'xFontColor', '#5f6368');
     var xRotation      = parseInt(styleVal(style, 'xRotation', '0'), 10);
 
-    // Grid
     var showXGridlines = styleVal(style, 'showXGridlines', false);
     var showYGridlines = styleVal(style, 'showYGridlines', true);
     var gridlineColor  = getFontColor(style, 'gridlineColor', '#e0e0e0');
 
-    // Legend
     var showLegend      = styleVal(style, 'showLegend', true);
     var legendPosition  = styleVal(style, 'legendPosition', 'top');
     var legendFontFamily = styleVal(style, 'legendFontFamily', 'Arial');
@@ -155,13 +179,7 @@ function drawViz(data) {
     var legendFontColor = getFontColor(style, 'legendFontColor', '#5f6368');
 
     // ── BUILD DATASETS ──────────────────────────────────────
-    //
-    // SAME color for LY and TY per metric.
-    // LY = lower opacity, TY = full opacity.
-    // Legend shows metric names only (not LY/TY per metric).
-
     var datasets = [];
-    var numComps = compLabels.length;
 
     compLabels.forEach(function(comp, cIdx) {
       var stackId = 'stack_' + cIdx;
@@ -183,11 +201,8 @@ function drawViz(data) {
           stack: stackId,
           categoryPercentage: 0.9,
           barPercentage: barPct,
-          // Store metadata for custom legend
           _metricIndex: mIdx,
           _compIndex: cIdx,
-          _metricName: mName,
-          _compName: comp,
           _baseColor: baseColor
         });
       });
@@ -216,68 +231,121 @@ function drawViz(data) {
 
     var ctx = canvas.getContext('2d');
 
-    // ── Custom legend plugin ────────────────────────────────
-    // Shows one entry per METRIC (not per dataset),
-    // with a solid square of the metric color.
+    // ── Custom legend plugin — metric names only ────────────
     var customLegendPlugin = {
-      id: 'customLegend',
+      id: 'metricLegend',
       afterDraw: function(chart) {
         if (!showLegend) return;
-
-        var ctx = chart.ctx;
+        var c = chart.ctx;
         var chartArea = chart.chartArea;
         var boxSize = 12;
-        var padding = 8;
-        var itemGap = 20;
+        var pad = 6;
+        var gap = 18;
 
-        // Build legend items: one per metric
+        c.save();
+        c.font = legendFontSize + 'px ' + legendFontFamily;
+        c.textBaseline = 'middle';
+
         var items = metricNames.map(function(name, idx) {
-          return {
-            label: name,
-            color: metricColors[idx] || DEFAULT_COLORS[idx]
-          };
+          return { label: name, color: metricColors[idx] || DEFAULT_COLORS[idx] };
         });
 
-        // Add LY/TY indicators
-        if (numComps > 1) {
-          items.push({
-            label: compLabels[0] + ' (faded)',
-            color: hexToRgba(metricColors[0] || DEFAULT_COLORS[0], lyOpacity)
-          });
-          items.push({
-            label: compLabels[1] + ' (solid)',
-            color: metricColors[0] || DEFAULT_COLORS[0]
-          });
-        }
-
-        // Measure total width
-        ctx.font = legendFontSize + 'px ' + legendFontFamily;
-        var totalWidth = 0;
+        var totalW = 0;
         items.forEach(function(item) {
-          totalWidth += boxSize + padding + ctx.measureText(item.label).width + itemGap;
+          totalW += boxSize + pad + c.measureText(item.label).width + gap;
         });
-        totalWidth -= itemGap;
+        totalW -= gap;
 
-        // Position
-        var x = chartArea.left + (chartArea.width - totalWidth) / 2;
-        var y = 8;
+        var x = chartArea.left + (chartArea.width - totalW) / 2;
+        var y = showTitle ? titleFontSize + 16 : 10;
 
-        ctx.textBaseline = 'middle';
         items.forEach(function(item) {
-          // Color box
-          ctx.fillStyle = item.color;
-          ctx.fillRect(x, y, boxSize, boxSize);
-          ctx.strokeStyle = '#ccc';
-          ctx.lineWidth = 0.5;
-          ctx.strokeRect(x, y, boxSize, boxSize);
-          x += boxSize + padding;
-
-          // Label
-          ctx.fillStyle = legendFontColor;
-          ctx.fillText(item.label, x, y + boxSize / 2);
-          x += ctx.measureText(item.label).width + itemGap;
+          c.fillStyle = item.color;
+          c.fillRect(x, y, boxSize, boxSize);
+          x += boxSize + pad;
+          c.fillStyle = legendFontColor;
+          c.fillText(item.label, x, y + boxSize / 2);
+          x += c.measureText(item.label).width + gap;
         });
+        c.restore();
       }
+    };
+
+    // ── External HTML tooltip (white, Looker-style) ─────────
+    var externalTooltipHandler = function(context) {
+      var tooltip = context.tooltip;
+      var tooltipEl = getOrCreateTooltipEl();
+
+      // Hide if no tooltip
+      if (tooltip.opacity === 0) {
+        tooltipEl.style.opacity = '0';
+        return;
+      }
+
+      // Get the hovered dataset info
+      var dataIndex = tooltip.dataPoints[0].dataIndex;
+      var hoveredDs = tooltip.dataPoints[0].dataset;
+      var stackId = hoveredDs.stack;
+      var compIdx = hoveredDs._compIndex;
+      var compName = compLabels[compIdx] || '';
+      var timeLabel = timeLabels[dataIndex] || '';
+
+      // Title row
+      var html = '<div style="font-weight:700;font-size:13px;color:#202124;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e8eaed">';
+      html += timeLabel + ' - ' + compName;
+      html += '</div>';
+
+      // Metric rows — table layout for alignment
+      html += '<table style="border-collapse:collapse;width:100%">';
+      var total = 0;
+
+      // Find all datasets in same stack
+      context.chart.data.datasets.forEach(function(ds) {
+        if (ds.stack === stackId) {
+          var val = ds.data[dataIndex] || 0;
+          total += val;
+          var mIdx = ds._metricIndex;
+          var color = metricColors[mIdx] || DEFAULT_COLORS[mIdx];
+          var name = metricNames[mIdx];
+
+          html += '<tr style="line-height:22px">';
+          // Color square
+          html += '<td style="width:16px;padding-right:8px"><div style="width:12px;height:12px;border-radius:2px;background:' + color + '"></div></td>';
+          // Metric name
+          html += '<td style="color:#5f6368;padding-right:16px;max-width:140px;overflow:hidden;text-overflow:ellipsis">' + name + '</td>';
+          // Value — right aligned
+          html += '<td style="text-align:right;font-weight:500;color:#202124">' + formatCurrency(val, currencySymbol) + '</td>';
+          html += '</tr>';
+        }
+      });
+
+      // Total row
+      html += '<tr style="line-height:26px;border-top:1px solid #e8eaed">';
+      html += '<td></td>';
+      html += '<td style="color:#202124;font-weight:700;padding-top:4px">Total</td>';
+      html += '<td style="text-align:right;font-weight:700;color:#202124;padding-top:4px">' + formatCurrency(total, currencySymbol) + '</td>';
+      html += '</tr>';
+
+      html += '</table>';
+
+      tooltipEl.innerHTML = html;
+
+      // Position
+      var canvasRect = context.chart.canvas.getBoundingClientRect();
+      var tooltipX = canvasRect.left + window.scrollX + tooltip.caretX;
+      var tooltipY = canvasRect.top + window.scrollY + tooltip.caretY;
+
+      // Keep tooltip inside viewport
+      var tooltipWidth = tooltipEl.offsetWidth || 220;
+      if (tooltipX + tooltipWidth + 10 > window.innerWidth) {
+        tooltipX = tooltipX - tooltipWidth - 10;
+      } else {
+        tooltipX = tooltipX + 10;
+      }
+
+      tooltipEl.style.left = tooltipX + 'px';
+      tooltipEl.style.top = (tooltipY - 10) + 'px';
+      tooltipEl.style.opacity = '1';
     };
 
     // ── Render Chart ────────────────────────────────────────
@@ -290,7 +358,7 @@ function drawViz(data) {
         maintainAspectRatio: false,
         layout: {
           padding: {
-            top: showLegend ? 30 : 8,
+            top: showLegend ? 34 : 8,
             right: 12,
             bottom: 4,
             left: 12
@@ -302,67 +370,52 @@ function drawViz(data) {
             text: chartTitle,
             font: { family: titleFontFamily, size: titleFontSize, weight: '600' },
             color: titleFontColor,
-            padding: { bottom: showLegend ? 4 : 12 }
+            padding: { bottom: showLegend ? 16 : 12 }
           },
           legend: {
-            display: false  // Using custom legend instead
+            display: false
           },
           tooltip: {
-            backgroundColor: 'rgba(32,33,36,0.92)',
-            titleFont: { family: 'Arial', size: 12, weight: '600' },
-            bodyFont: { family: 'Arial', size: 12 },
-            cornerRadius: 6,
-            padding: 10,
-            callbacks: {
-              label: function(context) {
-                return ' ' + context.dataset.label + ': ' + context.parsed.y.toLocaleString();
-              }
-            }
+            enabled: false,
+            external: externalTooltipHandler
           }
         },
         scales: {
           x: {
             stacked: true,
             display: showAxes,
-            grid: {
-              display: showXGridlines,
-              color: gridlineColor
-            },
+            type: 'category',
+            grid: { display: showXGridlines, color: gridlineColor },
             ticks: {
               font: { family: xFontFamily, size: xFontSize },
               color: xFontColor,
               maxRotation: xRotation,
-              minRotation: xRotation
+              minRotation: xRotation,
+              autoSkip: false
             },
-            title: {
-              display: showXAxisTitle,
-              text: 'Time Period',
-              color: xFontColor
-            },
+            title: { display: showXAxisTitle, text: 'Time Period', color: xFontColor },
             border: { color: axisColor }
           },
           y: {
             stacked: true,
             display: showAxes,
             beginAtZero: true,
-            grid: {
-              display: showYGridlines,
-              color: gridlineColor
-            },
+            grid: { display: showYGridlines, color: gridlineColor },
             ticks: {
               font: { family: xFontFamily, size: xFontSize },
               color: xFontColor,
               callback: function(v) {
+                if (currencySymbol) {
+                  if (v >= 1000000) return currencySymbol + (v / 1000000).toFixed(1) + 'M';
+                  if (v >= 1000) return currencySymbol + (v / 1000).toFixed(0) + 'K';
+                  return currencySymbol + v;
+                }
                 if (v >= 1000000) return (v / 1000000).toFixed(1) + 'M';
                 if (v >= 1000) return (v / 1000).toFixed(0) + 'K';
                 return v;
               }
             },
-            title: {
-              display: showYAxisTitle,
-              text: 'Value',
-              color: xFontColor
-            },
+            title: { display: showYAxisTitle, text: 'Value', color: xFontColor },
             border: { display: false }
           }
         },
@@ -384,10 +437,7 @@ function drawViz(data) {
               var v = ds.data[i];
               if (v && Math.abs(bar.height || 0) > 14) {
                 c.fillStyle = '#fff';
-                c.fillText(
-                  v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v.toString(),
-                  bar.x, bar.y + (bar.height || 0) / 2
-                );
+                c.fillText(formatCurrency(v, currencySymbol), bar.x, bar.y + (bar.height || 0) / 2);
               }
             });
           }
@@ -400,7 +450,6 @@ function drawViz(data) {
   }
 }
 
-// Expose for local testing
 if (typeof window !== 'undefined') {
   window.drawViz = drawViz;
 }

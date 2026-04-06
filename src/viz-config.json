@@ -8,13 +8,21 @@
           "id": "timeDimension",
           "label": "Time Period (X-Axis)",
           "type": "DIMENSION",
-          "options": { "min": 1, "max": 1 }
+          "options": {
+            "min": 1,
+            "max": 1,
+            "supportedTypes": ["DEFAULT", "TEXT", "TIME", "YEAR_MONTH_DAY", "YEAR_WEEK", "YEAR_MONTH", "YEAR_QUARTER"]
+          }
         },
         {
           "id": "comparisonDimension",
           "label": "Comparison Group (e.g. LY vs TY)",
           "type": "DIMENSION",
-          "options": { "min": 1, "max": 1 }
+          "options": {
+            "min": 1,
+            "max": 1,
+            "supportedTypes": ["DEFAULT", "TEXT"]
+          }
         },
         {
           "id": "metric",
@@ -30,346 +38,77 @@
       "id": "titleSection",
       "label": "Chart Title",
       "elements": [
-        {
-          "id": "showTitle",
-          "label": "Show Title",
-          "type": "CHECKBOX",
-          "defaultValue": true
-        },
-        {
-          "id": "chartTitle",
-          "label": "Title",
-          "type": "TEXTINPUT",
-          "defaultValue": "Y/Y Revenue"
-        },
-        {
-          "id": "titleFontFamily",
-          "label": "Font Family",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "Arial",
-          "options": [
-            { "label": "Arial", "value": "Arial" },
-            { "label": "Roboto", "value": "Roboto" },
-            { "label": "Open Sans", "value": "Open Sans" },
-            { "label": "Lato", "value": "Lato" },
-            { "label": "Google Sans", "value": "Google Sans" },
-            { "label": "Montserrat", "value": "Montserrat" }
-          ]
-        },
-        {
-          "id": "titleFontSize",
-          "label": "Font Size",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "20",
-          "options": [
-            { "label": "14px", "value": "14" },
-            { "label": "16px", "value": "16" },
-            { "label": "18px", "value": "18" },
-            { "label": "20px", "value": "20" },
-            { "label": "24px", "value": "24" }
-          ]
-        },
-        {
-          "id": "titleFontColor",
-          "label": "Font Color",
-          "type": "FONT_COLOR",
-          "defaultValue": {
-            "color": "#000000"
-          }
-        }
+        { "id": "showTitle", "label": "Show Title", "type": "CHECKBOX", "defaultValue": true },
+        { "id": "chartTitle", "label": "Title", "type": "TEXTINPUT", "defaultValue": "Y/Y Revenue" },
+        { "id": "titleFontFamily", "label": "Font Family", "type": "SELECT_SINGLE", "defaultValue": "Arial", "options": [{"label":"Arial","value":"Arial"},{"label":"Roboto","value":"Roboto"},{"label":"Open Sans","value":"Open Sans"},{"label":"Lato","value":"Lato"},{"label":"Google Sans","value":"Google Sans"},{"label":"Montserrat","value":"Montserrat"}] },
+        { "id": "titleFontSize", "label": "Font Size", "type": "SELECT_SINGLE", "defaultValue": "20", "options": [{"label":"14px","value":"14"},{"label":"16px","value":"16"},{"label":"18px","value":"18"},{"label":"20px","value":"20"},{"label":"24px","value":"24"}] },
+        { "id": "titleFontColor", "label": "Font Color", "type": "FONT_COLOR", "defaultValue": {"color":"#000000"} }
       ]
     },
     {
       "id": "barSection",
       "label": "Bar Chart",
       "elements": [
-        {
-          "id": "barPercentage",
-          "label": "Group Bar Width",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "0.95",
-          "options": [
-            { "label": "Narrow", "value": "0.7" },
-            { "label": "Medium", "value": "0.85" },
-            { "label": "Wide", "value": "0.95" },
-            { "label": "Full", "value": "1.0" }
-          ]
-        },
-        {
-          "id": "showDataLabels",
-          "label": "Show Data Labels",
-          "type": "CHECKBOX",
-          "defaultValue": false
-        },
-        {
-          "id": "borderRadius",
-          "label": "Bar Corner Radius",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "2",
-          "options": [
-            { "label": "None", "value": "0" },
-            { "label": "Small", "value": "2" },
-            { "label": "Medium", "value": "6" },
-            { "label": "Large", "value": "12" }
-          ]
-        }
+        { "id": "barPercentage", "label": "Group Bar Width", "type": "SELECT_SINGLE", "defaultValue": "0.95", "options": [{"label":"Narrow","value":"0.7"},{"label":"Medium","value":"0.85"},{"label":"Wide","value":"0.95"},{"label":"Full","value":"1.0"}] },
+        { "id": "showDataLabels", "label": "Show Data Labels", "type": "CHECKBOX", "defaultValue": false },
+        { "id": "barBorderRadius", "label": "Bar Corner Radius", "type": "SELECT_SINGLE", "defaultValue": "2", "options": [{"label":"None","value":"0"},{"label":"Small","value":"2"},{"label":"Medium","value":"6"},{"label":"Large","value":"12"}] },
+        { "id": "currencySymbol", "label": "Currency Symbol", "type": "SELECT_SINGLE", "defaultValue": "$", "options": [{"label":"None","value":""},{"label":"$","value":"$"},{"label":"\u20ac","value":"\u20ac"},{"label":"\u00a3","value":"\u00a3"}] }
       ]
     },
     {
       "id": "colorSection",
       "label": "Colors",
       "elements": [
-        {
-          "id": "color1",
-          "label": "Metric 1 Color",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#F37021"
-          }
-        },
-        {
-          "id": "color2",
-          "label": "Metric 2 Color",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#0072BA"
-          }
-        },
-        {
-          "id": "color3",
-          "label": "Metric 3 Color",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#FFC20E"
-          }
-        },
-        {
-          "id": "color4",
-          "label": "Metric 4 Color",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#52BFEE"
-          }
-        },
-        {
-          "id": "color5",
-          "label": "Metric 5 Color",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#76777A"
-          }
-        },
-        {
-          "id": "lyOpacity",
-          "label": "LY Bar Opacity",
-          "type": "OPACITY",
-          "defaultValue": 0.5
-        }
+        { "id": "color1", "label": "Metric 1 Color", "type": "FILL_COLOR", "defaultValue": {"color":"#F37021"} },
+        { "id": "color2", "label": "Metric 2 Color", "type": "FILL_COLOR", "defaultValue": {"color":"#0072BA"} },
+        { "id": "color3", "label": "Metric 3 Color", "type": "FILL_COLOR", "defaultValue": {"color":"#FFC20E"} },
+        { "id": "color4", "label": "Metric 4 Color", "type": "FILL_COLOR", "defaultValue": {"color":"#52BFEE"} },
+        { "id": "color5", "label": "Metric 5 Color", "type": "FILL_COLOR", "defaultValue": {"color":"#76777A"} },
+        { "id": "lyOpacity", "label": "LY Bar Opacity", "type": "OPACITY", "defaultValue": 0.5 }
       ]
     },
     {
       "id": "axesSection",
       "label": "Axes",
       "elements": [
-        {
-          "id": "showAxes",
-          "label": "Show Axes",
-          "type": "CHECKBOX",
-          "defaultValue": true
-        },
-        {
-          "id": "axisColor",
-          "label": "Axis Color",
-          "type": "FONT_COLOR",
-          "defaultValue": {
-            "color": "#5f6368"
-          }
-        },
-        {
-          "id": "showYAxisTitle",
-          "label": "Show Y-Axis Title",
-          "type": "CHECKBOX",
-          "defaultValue": false
-        },
-        {
-          "id": "showXAxisTitle",
-          "label": "Show X-Axis Title",
-          "type": "CHECKBOX",
-          "defaultValue": false
-        },
-        {
-          "id": "xFontFamily",
-          "label": "X-Axis Font Family",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "Arial",
-          "options": [
-            { "label": "Arial", "value": "Arial" },
-            { "label": "Roboto", "value": "Roboto" },
-            { "label": "Open Sans", "value": "Open Sans" },
-            { "label": "Lato", "value": "Lato" }
-          ]
-        },
-        {
-          "id": "xFontSize",
-          "label": "X-Axis Font Size",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "12",
-          "options": [
-            { "label": "10px", "value": "10" },
-            { "label": "12px", "value": "12" },
-            { "label": "14px", "value": "14" }
-          ]
-        },
-        {
-          "id": "xFontColor",
-          "label": "X-Axis Font Color",
-          "type": "FONT_COLOR",
-          "defaultValue": {
-            "color": "#5f6368"
-          }
-        },
-        {
-          "id": "xRotation",
-          "label": "X-Axis Label Rotation",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "0",
-          "options": [
-            { "label": "0°", "value": "0" },
-            { "label": "30°", "value": "30" },
-            { "label": "45°", "value": "45" },
-            { "label": "90°", "value": "90" }
-          ]
-        }
+        { "id": "showAxes", "label": "Show Axes", "type": "CHECKBOX", "defaultValue": true },
+        { "id": "axisColor", "label": "Axis Color", "type": "FONT_COLOR", "defaultValue": {"color":"#5f6368"} },
+        { "id": "showYAxisTitle", "label": "Show Y-Axis Title", "type": "CHECKBOX", "defaultValue": false },
+        { "id": "showXAxisTitle", "label": "Show X-Axis Title", "type": "CHECKBOX", "defaultValue": false },
+        { "id": "xFontFamily", "label": "X-Axis Font Family", "type": "SELECT_SINGLE", "defaultValue": "Arial", "options": [{"label":"Arial","value":"Arial"},{"label":"Roboto","value":"Roboto"},{"label":"Open Sans","value":"Open Sans"},{"label":"Lato","value":"Lato"}] },
+        { "id": "xFontSize", "label": "X-Axis Font Size", "type": "SELECT_SINGLE", "defaultValue": "12", "options": [{"label":"10px","value":"10"},{"label":"12px","value":"12"},{"label":"14px","value":"14"}] },
+        { "id": "xFontColor", "label": "X-Axis Font Color", "type": "FONT_COLOR", "defaultValue": {"color":"#5f6368"} },
+        { "id": "xRotation", "label": "X-Axis Label Rotation", "type": "SELECT_SINGLE", "defaultValue": "0", "options": [{"label":"0\u00b0","value":"0"},{"label":"30\u00b0","value":"30"},{"label":"45\u00b0","value":"45"},{"label":"90\u00b0","value":"90"}] }
       ]
     },
     {
       "id": "gridSection",
       "label": "Grid",
       "elements": [
-        {
-          "id": "gridBgColor",
-          "label": "Grid Background",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#ffffff",
-            "opacity": 0
-          }
-        },
-        {
-          "id": "showXGridlines",
-          "label": "Show X-Axis Gridlines",
-          "type": "CHECKBOX",
-          "defaultValue": false
-        },
-        {
-          "id": "showYGridlines",
-          "label": "Show Y-Axis Gridlines",
-          "type": "CHECKBOX",
-          "defaultValue": true
-        },
-        {
-          "id": "gridlineColor",
-          "label": "Gridline Color",
-          "type": "FONT_COLOR",
-          "defaultValue": {
-            "color": "#e0e0e0"
-          }
-        }
+        { "id": "showXGridlines", "label": "Show X-Axis Gridlines", "type": "CHECKBOX", "defaultValue": false },
+        { "id": "showYGridlines", "label": "Show Y-Axis Gridlines", "type": "CHECKBOX", "defaultValue": true },
+        { "id": "gridlineColor", "label": "Gridline Color", "type": "FONT_COLOR", "defaultValue": {"color":"#e0e0e0"} }
       ]
     },
     {
       "id": "legendSection",
       "label": "Legend",
       "elements": [
-        {
-          "id": "showLegend",
-          "label": "Display Legend",
-          "type": "CHECKBOX",
-          "defaultValue": true
-        },
-        {
-          "id": "legendPosition",
-          "label": "Position",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "top",
-          "options": [
-            { "label": "Top", "value": "top" },
-            { "label": "Bottom", "value": "bottom" },
-            { "label": "Left", "value": "left" },
-            { "label": "Right", "value": "right" }
-          ]
-        },
-        {
-          "id": "legendFontFamily",
-          "label": "Font Family",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "Arial",
-          "options": [
-            { "label": "Arial", "value": "Arial" },
-            { "label": "Roboto", "value": "Roboto" },
-            { "label": "Open Sans", "value": "Open Sans" },
-            { "label": "Lato", "value": "Lato" }
-          ]
-        },
-        {
-          "id": "legendFontSize",
-          "label": "Font Size",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "12",
-          "options": [
-            { "label": "10px", "value": "10" },
-            { "label": "12px", "value": "12" },
-            { "label": "14px", "value": "14" }
-          ]
-        },
-        {
-          "id": "legendFontColor",
-          "label": "Font Color",
-          "type": "FONT_COLOR",
-          "defaultValue": {
-            "color": "#5f6368"
-          }
-        }
+        { "id": "showLegend", "label": "Display Legend", "type": "CHECKBOX", "defaultValue": true },
+        { "id": "legendPosition", "label": "Position", "type": "SELECT_SINGLE", "defaultValue": "top", "options": [{"label":"Top","value":"top"},{"label":"Bottom","value":"bottom"},{"label":"Left","value":"left"},{"label":"Right","value":"right"}] },
+        { "id": "legendFontFamily", "label": "Font Family", "type": "SELECT_SINGLE", "defaultValue": "Arial", "options": [{"label":"Arial","value":"Arial"},{"label":"Roboto","value":"Roboto"},{"label":"Open Sans","value":"Open Sans"},{"label":"Lato","value":"Lato"}] },
+        { "id": "legendFontSize", "label": "Font Size", "type": "SELECT_SINGLE", "defaultValue": "12", "options": [{"label":"10px","value":"10"},{"label":"12px","value":"12"},{"label":"14px","value":"14"}] },
+        { "id": "legendFontColor", "label": "Font Color", "type": "FONT_COLOR", "defaultValue": {"color":"#5f6368"} }
       ]
     },
     {
       "id": "bgSection",
       "label": "Background and Border",
       "elements": [
-        {
-          "id": "bgColor",
-          "label": "Background",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#ffffff"
-          }
-        },
-        {
-          "id": "bgOpacity",
-          "label": "Opacity",
-          "type": "OPACITY",
-          "defaultValue": 1
-        },
-        {
-          "id": "borderColor",
-          "label": "Border Color",
-          "type": "FILL_COLOR",
-          "defaultValue": {
-            "color": "#e0e0e0"
-          }
-        },
-        {
-          "id": "borderRadius",
-          "label": "Border Radius",
-          "type": "SELECT_SINGLE",
-          "defaultValue": "0",
-          "options": [
-            { "label": "0", "value": "0" },
-            { "label": "4", "value": "4" },
-            { "label": "8", "value": "8" },
-            { "label": "12", "value": "12" }
-          ]
-        }
+        { "id": "bgColor", "label": "Background", "type": "FILL_COLOR", "defaultValue": {"color":"#ffffff"} },
+        { "id": "bgOpacity", "label": "Opacity", "type": "OPACITY", "defaultValue": 1 },
+        { "id": "borderColor", "label": "Border Color", "type": "FILL_COLOR", "defaultValue": {"color":"#e0e0e0"} },
+        { "id": "borderRadiusBg", "label": "Border Radius", "type": "SELECT_SINGLE", "defaultValue": "0", "options": [{"label":"0","value":"0"},{"label":"4","value":"4"},{"label":"8","value":"8"},{"label":"12","value":"12"}] }
       ]
     }
   ],
