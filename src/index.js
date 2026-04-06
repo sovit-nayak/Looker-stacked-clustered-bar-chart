@@ -330,21 +330,33 @@ function drawViz(data) {
 
       tooltipEl.innerHTML = html;
 
-      // Position
+      // Position — keep tooltip fully visible inside the iframe
       var canvasRect = context.chart.canvas.getBoundingClientRect();
-      var tooltipX = canvasRect.left + window.scrollX + tooltip.caretX;
-      var tooltipY = canvasRect.top + window.scrollY + tooltip.caretY;
-
-      // Keep tooltip inside viewport
       var tooltipWidth = tooltipEl.offsetWidth || 220;
-      if (tooltipX + tooltipWidth + 10 > window.innerWidth) {
-        tooltipX = tooltipX - tooltipWidth - 10;
-      } else {
-        tooltipX = tooltipX + 10;
+      var tooltipHeight = tooltipEl.offsetHeight || 120;
+      var iframeWidth = document.documentElement.clientWidth || window.innerWidth;
+      var iframeHeight = document.documentElement.clientHeight || window.innerHeight;
+
+      // Horizontal: prefer right of cursor, flip left if clipped
+      var tooltipX = canvasRect.left + tooltip.caretX + 12;
+      if (tooltipX + tooltipWidth > iframeWidth - 8) {
+        tooltipX = canvasRect.left + tooltip.caretX - tooltipWidth - 12;
+      }
+      if (tooltipX < 4) tooltipX = 4;
+
+      // Vertical: prefer above the cursor so it doesn't get clipped at bottom
+      var tooltipY = canvasRect.top + tooltip.caretY - tooltipHeight - 8;
+      // If that goes above the iframe top, show below instead
+      if (tooltipY < 4) {
+        tooltipY = canvasRect.top + tooltip.caretY + 12;
+      }
+      // Final check: if still clipped at bottom, pin to bottom edge
+      if (tooltipY + tooltipHeight > iframeHeight - 4) {
+        tooltipY = iframeHeight - tooltipHeight - 4;
       }
 
       tooltipEl.style.left = tooltipX + 'px';
-      tooltipEl.style.top = (tooltipY - 10) + 'px';
+      tooltipEl.style.top = tooltipY + 'px';
       tooltipEl.style.opacity = '1';
     };
 
